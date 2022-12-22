@@ -28,6 +28,7 @@ class _BaseViewState extends State<BaseView> {
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
     return Scaffold(
+      extendBody: true,
       bottomNavigationBar: Container(
         height: 55,
         width: double.infinity,

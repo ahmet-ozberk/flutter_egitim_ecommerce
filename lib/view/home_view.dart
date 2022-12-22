@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_egitim_ecommerce/constant/app_color.dart';
+import 'package:flutter_egitim_ecommerce/view/products_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -36,15 +37,17 @@ class _HomeViewState extends State<HomeView> {
             ),
             itemCount: 6,
             itemBuilder: (context, index, realIndex) {
-              return Container(
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                 ),
                 margin: EdgeInsets.symmetric(horizontal: 10, vertical: index == activeCampaingsIndex ? 0 : 10),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
-                  child: Image.network(
-                    "https://loremflickr.com/1080/720?random=${index + 1}",
+                  child: FadeInImage(
+                    image: NetworkImage("https://loremflickr.com/1080/720?random=${index + 1}"),
+                    placeholder: const AssetImage("assets/images/image_loading.gif"),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -68,6 +71,64 @@ class _HomeViewState extends State<HomeView> {
                 ),
               ),
             ),
+          ),
+          const Padding(
+            padding: EdgeInsets.only(left: 24, top: 12, bottom: 4),
+            child: Text(
+              "Kategoriler",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+          ),
+          GridView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              // satırlar arasındaki boşluğu belirler
+              mainAxisSpacing: 12,
+              // sütunmlar arasındaki boşluğu belirler
+              crossAxisSpacing: 16,
+            ),
+            itemCount: 10,
+            itemBuilder: (context, index) {
+              return InkWell(
+                borderRadius: BorderRadius.circular(8),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductsView(
+                        categoryName: "Kategori $index",
+                      ),
+                    ),
+                  );
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: FadeInImage(
+                          image: NetworkImage("https://loremflickr.com/1080/720?random=${index + 1}"),
+                          placeholder: const AssetImage("assets/images/image_loading.gif"),
+                          fit: BoxFit.cover,
+                          placeholderFit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      "Kategori $index",
+                      style: TextStyle(
+                        color: Colors.grey.shade900,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    )
+                  ],
+                ),
+              );
+            },
           ),
         ],
       ),
