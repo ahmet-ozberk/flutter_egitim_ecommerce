@@ -3,6 +3,8 @@ import 'package:flutter_egitim_ecommerce/constant/app_color.dart';
 import 'package:flutter_egitim_ecommerce/view/base_view.dart';
 import 'package:flutter_egitim_ecommerce/view/login_view.dart';
 import 'package:flutter_egitim_ecommerce/widgets/custom_button.dart';
+import 'package:flutter_egitim_ecommerce/widgets/custom_password_field.dart';
+import 'package:flutter_egitim_ecommerce/widgets/custom_textfield.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -79,105 +81,9 @@ class _RegisterViewState extends State<RegisterView> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        TextField(
-                          decoration: InputDecoration(
-                            hintText: "İsim Soyisim",
-                            fillColor: Colors.white,
-                            filled: true,
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: Colors.white,
-                                width: 0.5,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: Colors.white,
-                                width: 0.5,
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: Colors.white,
-                                width: 0.5,
-                              ),
-                            ),
-                          ),
-                        ),
-                        TextField(
-                          decoration: InputDecoration(
-                            hintText: "Email Adresi",
-                            fillColor: Colors.white,
-                            filled: true,
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: Colors.white,
-                                width: 0.5,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: Colors.white,
-                                width: 0.5,
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: Colors.white,
-                                width: 0.5,
-                              ),
-                            ),
-                          ),
-                        ),
-                        TextField(
-                          obscureText: isVisible,
-                          decoration: InputDecoration(
-                            hintText: "Parola",
-                            fillColor: Colors.white,
-                            filled: true,
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  isVisible = !isVisible;
-                                });
-                              },
-                              icon: Icon(
-                                isVisible ? Icons.visibility_rounded : Icons.visibility_off_rounded,
-                                color: AppColor.primary,
-                              ),
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: Colors.white,
-                                width: 0.5,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: Colors.white,
-                                width: 0.5,
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: Colors.white,
-                                width: 0.5,
-                              ),
-                            ),
-                          ),
-                        ),
+                        CustomTextfield(hintText: "İsim Soyisim"),
+                        CustomTextfield(hintText: "Email Adresi"),
+                        CustomPasswordField(),
                       ],
                     ),
                   ),

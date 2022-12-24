@@ -36,7 +36,78 @@ class _ProductDetailViewState extends State<ProductDetailView> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final bottomSafeArea = MediaQuery.of(context).padding.bottom;
     return Scaffold(
+      bottomSheet: Container(
+        padding: EdgeInsets.only(left: 16, right: 16, top: 12, bottom: bottomSafeArea),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade200,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "${price * quantity} ₺",
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  children: [
+                    InkWell(
+                      onTap: () => deincrement(),
+                      child: Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.grey.shade400,
+                        ),
+                        child: const Icon(Icons.remove),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        quantity.toString(),
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () => increment(),
+                      child: Container(
+                        width: 30,
+                        height: 30,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.black,
+                        ),
+                        child: const Icon(
+                          Icons.add,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            ElevatedButton.icon(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColor.pink,
+                  maximumSize: Size(size.width * 0.3, 36),
+                  minimumSize: Size(size.width * 0.3, 32),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  )),
+              icon: const Icon(Icons.add_shopping_cart_rounded),
+              label: const Text("Ekle"),
+            ),
+          ],
+        ),
+      ),
       body: SafeArea(
         top: false,
         child: ListView(
@@ -163,78 +234,6 @@ class _ProductDetailViewState extends State<ProductDetailView> {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   Text(longLoremText),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: size.height * 0.1,
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    children: [
-                      Text(
-                        "${price * quantity} ₺",
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      Row(
-                        children: [
-                          InkWell(
-                            onTap: () => deincrement(),
-                            child: Container(
-                              width: 30,
-                              height: 30,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.grey.shade400,
-                              ),
-                              child: const Icon(Icons.remove),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              quantity.toString(),
-                              style: const TextStyle(fontSize: 20),
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () => increment(),
-                            child: Container(
-                              width: 30,
-                              height: 30,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.black,
-                              ),
-                              child: const Icon(
-                                Icons.add,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColor.pink,
-                        maximumSize: Size(size.width * 0.3, 36),
-                        minimumSize: Size(size.width * 0.3, 32),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        )),
-                    icon: const Icon(Icons.add_shopping_cart_rounded),
-                    label: const Text("Ekle"),
-                  ),
                 ],
               ),
             ),
