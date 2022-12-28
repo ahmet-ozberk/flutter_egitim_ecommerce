@@ -112,26 +112,29 @@ class _ProfileViewState extends State<ProfileView> {
             child: SafeArea(
               child: Column(
                 children: [
-                  InkWell(
-                    borderRadius: BorderRadius.circular(100),
-                    onTap: () => selectPhoto(),
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 20, bottom: 20),
-                      width: size.width * 0.3,
-                      height: size.width * 0.3,
-                      decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 10,
-                        ),
-                      ]),
-                      child: selectedImage != null
-                          ? ClipOval(
-                              child: Image.file(
-                              selectedImage!,
-                              fit: BoxFit.cover,
-                            ))
-                          : const Icon(Icons.add_a_photo),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20, bottom: 20),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(100),
+                      onTap: () => selectPhoto(),
+                      child: Container(
+                        width: size.width * 0.3,
+                        height: size.width * 0.3,
+                        decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 10,
+                          ),
+                        ]),
+                        child: selectedImage != null
+                            ? ClipOval(
+                                child: Image.file(
+                                  selectedImage!,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : const Icon(Icons.add_a_photo),
+                      ),
                     ),
                   ),
                   const Text(
@@ -243,6 +246,7 @@ class _ProfileViewState extends State<ProfileView> {
   void selectPhoto() {
     showCupertinoDialog(
       context: context,
+      barrierDismissible: true,
       builder: (context) {
         return CupertinoAlertDialog(
           title: const Text("Fotoğraf Yükle"),
