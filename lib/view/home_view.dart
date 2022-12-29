@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_egitim_ecommerce/constant/app_color.dart';
 import 'package:flutter_egitim_ecommerce/model/campaign_model.dart';
+import 'package:flutter_egitim_ecommerce/model/categories_model.dart';
 import 'package:flutter_egitim_ecommerce/services/api_service.dart';
 import 'package:flutter_egitim_ecommerce/services/notify.dart';
 import 'package:flutter_egitim_ecommerce/view/products_view.dart';
@@ -17,6 +18,7 @@ class _HomeViewState extends State<HomeView> {
   int activeCampaingsIndex = 0;
   bool isLoading = false;
   List<CampaignModelData?> campaigns = [];
+  List<CategoriesModelData?> categories = [];
 
   void getCampaign() {
     isLoading = true;
@@ -24,7 +26,24 @@ class _HomeViewState extends State<HomeView> {
       if (value != null && value.status == true) {
         setState(() {
           campaigns = value.data!;
-          isLoading = false;
+        });
+        ApiService.categories().then((value) {
+          if (value != null && value.status == true) {
+            setState(() {
+              categories = value.data!;
+              isLoading = false;
+            });
+          } else {
+            setState(() {
+              isLoading = false;
+              Notify.unsuccess("Bir sorun oluştu");
+            });
+          }
+        }).catchError((e) {
+          setState(() {
+            isLoading = false;
+            Notify.unsuccess("Bir sorun oluştu");
+          });
         });
       } else {
         setState(() {
@@ -84,7 +103,8 @@ class _HomeViewState extends State<HomeView> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: FadeInImage(
-                          image: NetworkImage("https://e-ticaret-api.onrender.com/uploads/slider/${campaigns[index]!.image}"),
+                          image: NetworkImage(
+                              "https://e-ticaret-api.onrender.com/uploads/slider/${campaigns[index]!.image}"),
                           placeholder: const AssetImage("assets/images/image_loading.gif"),
                           fit: BoxFit.cover,
                         ),
@@ -128,7 +148,7 @@ class _HomeViewState extends State<HomeView> {
                     // sütunmlar arasındaki boşluğu belirler
                     crossAxisSpacing: 16,
                   ),
-                  itemCount: 10,
+                  itemCount: categories.length,
                   itemBuilder: (context, index) {
                     return InkWell(
                       borderRadius: BorderRadius.circular(8),
@@ -137,7 +157,8 @@ class _HomeViewState extends State<HomeView> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => ProductsView(
-                              categoryName: "Kategori $index",
+                              categoryName: categories[index]!.categoryName ?? "",
+                              categoryId: categories[index]!.id!,
                             ),
                           ),
                         );
@@ -146,22 +167,32 @@ class _HomeViewState extends State<HomeView> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Expanded(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: FadeInImage(
-                                image: NetworkImage("https://loremflickr.com/1080/720?random=${index + 1}"),
-                                placeholder: const AssetImage("assets/images/image_loading.gif"),
-                                fit: BoxFit.cover,
-                                placeholderFit: BoxFit.cover,
+                            child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: AppColor.primary),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: FadeInImage(
+                                  image: NetworkImage(
+                                      "https://e-ticaret-api.onrender.com/uploads/categories/${categories[index]!.image}"),
+                                  placeholder: const AssetImage("assets/images/image_loading.gif"),
+                                  fit: BoxFit.cover,
+                                  placeholderFit: BoxFit.cover,
+                                ),
                               ),
                             ),
                           ),
                           Text(
-                            "Kategori $index",
+                            categories[index]?.categoryName ?? "",
                             style: TextStyle(
                               color: Colors.grey.shade900,
                               fontWeight: FontWeight.w500,
                             ),
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
                           )
                         ],
                       ),

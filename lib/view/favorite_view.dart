@@ -34,7 +34,7 @@ class _FavoriteViewState extends State<FavoriteView> {
               clipBehavior: Clip.none,
               children: [
                 InkWell(
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetailView())),
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetailView(id: 1,))),
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),

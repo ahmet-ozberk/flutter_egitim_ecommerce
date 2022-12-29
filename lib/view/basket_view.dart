@@ -37,7 +37,7 @@ class _BasketViewState extends State<BasketView> {
               return InkWell(
                 borderRadius: BorderRadius.circular(16),
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetailView()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetailView(id: 1,)));
                 },
                 child: Card(
                   elevation: 10,

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_egitim_ecommerce/constant/app_color.dart';
+import 'package:flutter_egitim_ecommerce/model/product_detail_model.dart';
+import 'package:flutter_egitim_ecommerce/services/api_service.dart';
+import 'package:flutter_egitim_ecommerce/services/notify.dart';
 import 'package:flutter_egitim_ecommerce/widgets/custom_button.dart';
 
 class ProductDetailView extends StatefulWidget {
-  const ProductDetailView({super.key});
+  final int id;
+  const ProductDetailView({super.key, required this.id});
 
   @override
   State<ProductDetailView> createState() => _ProductDetailViewState();
@@ -13,9 +17,37 @@ class _ProductDetailViewState extends State<ProductDetailView> {
   int quantity = 1;
   int pageViewActiveIndex = 0;
   double price = 179.99;
-  final String loremText = "Lorem ipsum dolor sit amet, consectetur adipiscing";
-  final String longLoremText =
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Erat imperdiet sed euismod nisi porta lorem mollis aliquam ut. At ultrices mi tempus imperdiet. Eget velit aliquet sagittis id consectetur purus ut. Ut etiam sit amet nisl purus in. Ligula ullamcorper malesuada proin libero nunc consequat.";
+  ProductDetailModelData? model;
+  bool isLoading = false;
+
+  void getData() {
+    isLoading = true;
+    final data = {"productId": widget.id};
+    ApiService.productDetail(data).then((value) {
+      if (value != null && value.status == true) {
+        setState(() {
+          model = value.data!;
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+          Notify.unsuccess("Bir sorun oluştu");
+        });
+      }
+    }).catchError((e) {
+      setState(() {
+        isLoading = false;
+        Notify.unsuccess("Bir sorun oluştu");
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
 
   // quantity değerini arttırmak için kullanılacak
   void increment() {
@@ -50,7 +82,7 @@ class _ProductDetailViewState extends State<ProductDetailView> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  "${price * quantity} ₺",
+                  "${(model?.price ?? 1) * quantity} ₺",
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 Row(
@@ -108,138 +140,143 @@ class _ProductDetailViewState extends State<ProductDetailView> {
           ],
         ),
       ),
-      body: SafeArea(
-        top: false,
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            Stack(
-              children: [
-                SizedBox(
-                  height: size.height * 0.4,
-                  child: PageView.builder(
-                    itemCount: 4,
-                    onPageChanged: (activeIndex) {
-                      setState(() {
-                        pageViewActiveIndex = activeIndex;
-                      });
-                    },
-                    itemBuilder: (context, index) {
-                      return Image.network(
-                        "https://loremflickr.com/1080/720?random=${index + 1}",
-                        fit: BoxFit.cover,
-                      );
-                    },
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator.adaptive(),
+            )
+          : SafeArea(
+              top: false,
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  Stack(
+                    children: [
+                      SizedBox(
+                        height: size.height * 0.4,
+                        child: PageView.builder(
+                          itemCount: model?.image?.length ?? 0,
+                          onPageChanged: (activeIndex) {
+                            setState(() {
+                              pageViewActiveIndex = activeIndex;
+                            });
+                          },
+                          itemBuilder: (context, index) {
+                            final item = model?.image?[index];
+                            return Image.network(
+                              "https://e-ticaret-api.onrender.com/uploads/products/${item}",
+                              fit: BoxFit.cover,
+                            );
+                          },
+                        ),
+                      ),
+                      SafeArea(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 12, right: 12),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.7),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: IconButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  icon: const Icon(Icons.arrow_back_ios_new),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.6),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  "${pageViewActiveIndex + 1}/${model?.image?.length ?? 0}",
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 12,
+                        right: 12,
+                        child: Container(
+                          decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white, boxShadow: [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 10,
+                            )
+                          ]),
+                          child: IconButton(
+                            onPressed: () {},
+                            icon: const Icon(
+                              Icons.favorite,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 12, right: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.7),
-                            shape: BoxShape.circle,
-                          ),
-                          child: IconButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            icon: const Icon(Icons.arrow_back_ios_new),
-                          ),
+                        Text(
+                          "${model?.price ?? 0.0} ₺",
+                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            "${pageViewActiveIndex + 1}/4",
-                            style: const TextStyle(color: Colors.white),
+                        Row(
+                          children: List.generate(
+                            5,
+                            (index) => Padding(
+                              padding: const EdgeInsets.only(left: 2),
+                              child: Icon(
+                                Icons.star,
+                                color: index < 4 ? Colors.orange : Colors.grey.shade300,
+                                size: 20,
+                              ),
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
-                Positioned(
-                  bottom: 12,
-                  right: 12,
-                  child: Container(
-                    decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white, boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 10,
-                      )
-                    ]),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.favorite,
-                        color: Colors.red,
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      model?.title ?? "Bu ürünün başlık bilgisi bulunmuyor",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 18),
                     ),
                   ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "$price ₺",
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  Row(
-                    children: List.generate(
-                      5,
-                      (index) => Padding(
-                        padding: const EdgeInsets.only(left: 2),
-                        child: Icon(
-                          Icons.star,
-                          color: index < 4 ? Colors.orange : Colors.grey.shade300,
-                          size: 20,
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    margin: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Ürün Açıklaması",
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
-                      ),
+                        Text(model?.description ?? "Bu ürün için açıklama bulunmuyor"),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                loremText,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 18),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(20),
-              margin: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Ürün Açıklaması",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  Text(longLoremText),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
