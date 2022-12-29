@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_egitim_ecommerce/constant/app_color.dart';
+import 'package:flutter_egitim_ecommerce/services/api_service.dart';
+import 'package:flutter_egitim_ecommerce/services/notify.dart';
+import 'package:flutter_egitim_ecommerce/services/storage_servis.dart';
 import 'package:flutter_egitim_ecommerce/view/base_view.dart';
 import 'package:flutter_egitim_ecommerce/view/register_view.dart';
 import 'package:flutter_egitim_ecommerce/widgets/custom_button.dart';
@@ -15,6 +18,34 @@ class LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<LoginView> {
   bool isVisible = true;
+  bool isLoading = false;
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  void login() {
+    setState(() {
+      isLoading = true;
+    });
+    final data = {"email": emailController.text, "password": passwordController.text};
+    ApiService.login(data).then((value) {
+      if (value != null && value.status == true) {
+        StorageService.setToken(value.token!);
+        Navigator.pushAndRemoveUntil(
+            context, MaterialPageRoute(builder: (context) => const BaseView()), (route) => false);
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+        Notify.unsuccess("Bir sorun oluştu, bilgilerinizi kontrol edip tekrar deneyin.");
+      }
+    }).catchError((e) {
+      setState(() {
+        isLoading = false;
+      });
+      Notify.unsuccess("Bir sorun oluştu.");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -81,21 +112,25 @@ class _LoginViewState extends State<LoginView> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        CustomTextfield(hintText: "Email Adresi"),
-                        CustomPasswordField(),
+                        CustomTextfield(
+                          hintText: "Email Adresi",
+                          controller: emailController,
+                        ),
+                        CustomPasswordField(
+                          controller: passwordController,
+                        ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 40),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30),
-                    child: CustomButton(
-                      text: "Giriş Yap",
-                      onTap: () {
-                        Navigator.pushAndRemoveUntil(
-                            context, MaterialPageRoute(builder: (context) => const BaseView()), (route) => false);
-                      },
-                    ),
+                    child: isLoading
+                        ? const Center(child: CircularProgressIndicator.adaptive())
+                        : CustomButton(
+                            text: "Giriş Yap",
+                            onTap: () => login(),
+                          ),
                   ),
                   const SizedBox(height: 20),
                   Row(

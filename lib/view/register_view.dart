@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_egitim_ecommerce/constant/app_color.dart';
+import 'package:flutter_egitim_ecommerce/services/api_service.dart';
+import 'package:flutter_egitim_ecommerce/services/notify.dart';
+import 'package:flutter_egitim_ecommerce/services/storage_servis.dart';
 import 'package:flutter_egitim_ecommerce/view/base_view.dart';
 import 'package:flutter_egitim_ecommerce/view/login_view.dart';
 import 'package:flutter_egitim_ecommerce/widgets/custom_button.dart';
@@ -15,6 +18,50 @@ class RegisterView extends StatefulWidget {
 
 class _RegisterViewState extends State<RegisterView> {
   bool isVisible = true;
+  bool isLoading = false;
+  final nameController = TextEditingController();
+  final phoneController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  void register() {
+    if (nameController.text.isEmpty ||
+        phoneController.text.isEmpty ||
+        emailController.text.isEmpty ||
+        passwordController.text.isEmpty) {
+      Notify.unsuccess("Lütfen tüm bilgileri doldurun.");
+      return;
+    }
+    setState(() {
+      isLoading = true;
+    });
+    final data = {
+      "name": nameController.text,
+      "phone": phoneController.text,
+      "email": emailController.text,
+      "password": passwordController.text
+    };
+    print(data);
+    ApiService.register(data).then((value) {
+      if (value != null && value.status == true) {
+        print("test =>${value.message}");
+        StorageService.setToken(value.token!);
+        Navigator.pushAndRemoveUntil(
+            context, MaterialPageRoute(builder: (context) => const BaseView()), (route) => false);
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+        Notify.unsuccess(value?.message ?? "Bir sorun oluştu, bilgilerinizi kontrol edip tekrar deneyin.");
+      }
+    }).catchError((e) {
+      setState(() {
+        isLoading = false;
+      });
+      Notify.unsuccess("Bir sorun oluştu.");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -81,22 +128,32 @@ class _RegisterViewState extends State<RegisterView> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        CustomTextfield(hintText: "İsim Soyisim"),
-                        CustomTextfield(hintText: "Email Adresi"),
-                        CustomPasswordField(),
+                        CustomTextfield(
+                          hintText: "İsim Soyisim",
+                          controller: nameController,
+                        ),
+                        CustomTextfield(
+                          hintText: "Telefon",
+                          controller: phoneController,
+                        ),
+                        CustomTextfield(
+                          hintText: "Email Adresi",
+                          controller: emailController,
+                        ),
+                        CustomPasswordField(
+                          controller: passwordController,
+                        ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 40),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30),
-                    child: CustomButton(
-                      text: "Kayıt Ol",
-                      onTap: () {
-                        Navigator.pushAndRemoveUntil(
-                            context, MaterialPageRoute(builder: (context) => const BaseView()), (route) => false);
-                      },
-                    ),
+                    child: isLoading
+                        ? const Center(
+                            child: CircularProgressIndicator.adaptive(),
+                          )
+                        : CustomButton(text: "Kayıt Ol", onTap: () => register()),
                   ),
                   const SizedBox(height: 20),
                   Row(

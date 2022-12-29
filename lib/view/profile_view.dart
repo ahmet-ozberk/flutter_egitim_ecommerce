@@ -4,10 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_egitim_ecommerce/constant/app_color.dart';
 import 'package:flutter_egitim_ecommerce/model/profile_menu_model.dart';
+import 'package:flutter_egitim_ecommerce/services/storage_servis.dart';
 import 'package:flutter_egitim_ecommerce/view/login_view.dart';
 import 'package:flutter_egitim_ecommerce/view/password_update_view.dart';
 import 'package:flutter_egitim_ecommerce/view/previous_orders_view.dart';
 import 'package:flutter_egitim_ecommerce/view/profile_edit_view.dart';
+import 'package:flutter_egitim_ecommerce/view/splash_view.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileView extends StatefulWidget {
@@ -53,9 +55,10 @@ class _ProfileViewState extends State<ProfileView> {
         leading: Icons.exit_to_app_rounded,
         text: "Çıkış Yap",
         onTap: () {
+          StorageService.deleteToken();
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const LoginView()),
+            MaterialPageRoute(builder: (context) => const SplashView()),
             (route) => false,
           );
         },
